@@ -1286,6 +1286,34 @@ function SummaryStep({ plan, persons, mealsPerWeek, frequency, quantity, restric
                     </div>
                 </div>
 
+                {/* Total */}
+                <div className="flex justify-between items-center py-3 border-b border-t mt-2">
+                    <span className="font-semibold">Total de Itens</span>
+                    <div className="text-right">
+                        <span className="text-xl font-bold text-azul">
+                            {isSubscription && plan.flowType !== 'C' ? '1 Kit' : cartItemsCount > 0 ? `${cartItemsCount} Itens` : 'Nenhum item'}
+                        </span>
+                    </div>
+                </div>
+
+                {hasCart && (
+                    <div className="py-3 border-b">
+                        <span className="text-muted-foreground block mb-2 font-medium">Itens Selecionados</span>
+                        <div className="space-y-1 text-sm bg-areia/20 p-3 rounded-lg">
+                            {Object.entries(cart).map(([productId, qty]) => {
+                                const product = products.find(p => p.id === productId)
+                                if (!product) return null
+                                return (
+                                    <div key={productId} className="flex justify-between items-center">
+                                        <span className="truncate flex-1">{product.name}</span>
+                                        <span className="font-medium text-azul whitespace-nowrap ml-4">{qty}x</span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Plano */}
                 <div className="flex justify-between py-2 border-b">
                     <span className="text-muted-foreground">Plano</span>
@@ -1367,37 +1395,6 @@ function SummaryStep({ plan, persons, mealsPerWeek, frequency, quantity, restric
                         <span className="font-medium text-red-600">{selectedRestriction.emoji} Sem {selectedRestriction.name}</span>
                     </div>
                 )}
-
-                {hasCart && (
-                    <div className="py-2 border-b">
-                        <span className="text-muted-foreground block mb-1">Itens ({Object.values(cart).reduce((a, b) => a + b, 0)})</span>
-                        <div className="space-y-0.5 text-xs">
-                            {Object.entries(cart).slice(0, 3).map(([productId, qty]) => {
-                                const product = products.find(p => p.id === productId)
-                                if (!product) return null
-                                return (
-                                    <div key={productId} className="flex justify-between">
-                                        <span className="truncate">{qty}× {product.name}</span>
-                                        <span>R$ {(product.price * qty).toFixed(2).replace('.', ',')}</span>
-                                    </div>
-                                )
-                            })}
-                            {Object.keys(cart).length > 3 && (
-                                <span className="text-muted-foreground">+{Object.keys(cart).length - 3} mais...</span>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Total */}
-                <div className="flex justify-between items-center pt-3">
-                    <span className="font-semibold">Total de Itens</span>
-                    <div className="text-right">
-                        <span className="text-xl font-bold text-azul">
-                            {isSubscription ? '1 Kit' : cartItemsCount > 0 ? `${cartItemsCount} Itens` : 'Nenhum item'}
-                        </span>
-                    </div>
-                </div>
 
                 {/* Personalizar button for D/E flows */}
                 {(plan.flowType === 'D' || plan.flowType === 'E') && (

@@ -179,18 +179,6 @@ function PlanCard({ plan, compact = false }: { plan: Plan; compact?: boolean }) 
                 <div className="p-3 flex-grow flex flex-col">
                     <h3 className="text-lg font-display text-azul mb-1">{plan.name}</h3>
 
-                    {/* Preço inline */}
-                    <div className="flex items-baseline gap-1 mb-2">
-                        {plan.price ? (
-                            <>
-                                <span className="text-lg font-bold text-azul">{plan.priceLabel}</span>
-                                {isSubscription && <span className="text-xs text-muted-foreground">/mês</span>}
-                            </>
-                        ) : (
-                            <span className="text-sm font-medium text-azul">Desde R$ 89</span>
-                        )}
-                    </div>
-
                     {/* Recomendação curta */}
                     <p className="text-xs text-muted-foreground mb-1">{plan.recommendation}</p>
                     {isSubscription && (
@@ -261,15 +249,6 @@ function PlanCard({ plan, compact = false }: { plan: Plan; compact?: boolean }) 
                     </p>
                     {isSubscription && (
                         <p className="text-xs text-azul/70 mt-0.5">2 entregas por mês</p>
-                    )}
-                    {plan.price && (
-                        <p className="text-lg font-bold text-azul mt-1">
-                            {plan.priceLabel}
-                            {isSubscription && <span className="text-xs font-normal text-muted-foreground">/mês</span>}
-                        </p>
-                    )}
-                    {!plan.price && (
-                        <p className="text-sm text-muted-foreground mt-1">Preço conforme seleção</p>
                     )}
                 </div>
             </CardContent>
