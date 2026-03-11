@@ -4,18 +4,6 @@ Este documento contém o script necessário para receber os pedidos dos influenc
 
 ---
 
-## ⚠️ Diagnóstico: Por que o webhook não está funcionando?
-
-A URL atual configurada retorna **HTTP 405 (Method Not Allowed)**, o que indica um dos seguintes problemas:
-
-1. **A implantação do Apps Script está desatualizada** — o código foi editado mas não foi re-implantado como nova versão.
-2. **A função `doPost` não existe ou não foi salva** no script antes da implantação.
-3. **A permissão está errada** — "Quem pode acessar" não está definido como **"Qualquer pessoa"**.
-
-**Solução:** Seguir os passos abaixo para criar e implantar o script corretamente.
-
----
-
 ## 1. Criar a Planilha
 
 1. Acesse [Google Sheets](https://sheets.google.com/) logado em uma conta do Ocyá (ex: suporte@ocya.com.br).
@@ -57,7 +45,7 @@ function doPost(e) {
     // Altere para os e-mails reais da equipe que vão processar o pedido
     var emailsDestino = "suporte@ocya.com.br,contato@ocya.com.br"; 
     
-    var subject = "🚨 NOVO PEDIDO SQUAD OCYÁ: " + name;
+    var subject = "NOVO PEDIDO SQUAD OCYÁ: " + name;
     var body = "Olá Equipe Ocyá,\n\n" +
                "Um novo pedido foi recebido pelo site Squad Ocyá. Os detalhes estão abaixo:\n\n" +
                "--- DADOS DO CLIENTE ---\n" +
@@ -106,12 +94,31 @@ function doPost(e) {
 
 ## 4. Atualizar a URL no Site
 
-1. Acesse o painel da Vercel: [vercel.com/dashboard](https://vercel.com/dashboard)
-2. Entre no projeto **squad-ocya-em-casa**.
-3. Vá em **Settings > Environment Variables**.
-4. Localize `NEXT_PUBLIC_GOOGLE_SCRIPT_URL` e clique em editar.
-5. Cole a nova URL gerada no passo anterior.
-6. Salve e **redeploy** o projeto para a mudança entrar em vigor.
+> ⚠️ **Atenção ao configurar a variável na Vercel:** Cole **apenas a URL** no campo de valor, sem nenhum prefixo. O valor correto é somente:
+> ```
+> https://script.google.com/macros/s/.../exec
+> ```
+> Não copie a linha inteira do `.env.local` (que inclui `NEXT_PUBLIC_GOOGLE_SCRIPT_URL=`). Isso faria o site tentar fazer POST para uma URL inválida.
+
+Para configurar via CLI (recomendado):
+
+```bash
+# Apagar versão antiga (se existir)
+vercel env rm NEXT_PUBLIC_GOOGLE_SCRIPT_URL production --yes
+vercel env rm NEXT_PUBLIC_GOOGLE_SCRIPT_URL preview --yes
+vercel env rm NEXT_PUBLIC_GOOGLE_SCRIPT_URL development --yes
+
+# Adicionar com o valor correto
+echo "https://script.google.com/macros/s/SUA_URL_AQUI/exec" | vercel env add NEXT_PUBLIC_GOOGLE_SCRIPT_URL production
+echo "https://script.google.com/macros/s/SUA_URL_AQUI/exec" | vercel env add NEXT_PUBLIC_GOOGLE_SCRIPT_URL preview
+echo "https://script.google.com/macros/s/SUA_URL_AQUI/exec" | vercel env add NEXT_PUBLIC_GOOGLE_SCRIPT_URL development
+```
+
+Após adicionar, faça um redeploy para o build recompilar com a nova URL (variáveis `NEXT_PUBLIC_*` são injetadas em build time):
+
+```bash
+vercel --prod --yes
+```
 
 ---
 
@@ -126,6 +133,8 @@ curl -X POST "SUA_URL_AQUI" \
 ```
 
 Se tudo estiver correto, deve aparecer uma linha nova na planilha e um e-mail chegar nas caixas de suporte@ocya.com.br e contato@ocya.com.br.
+
+> **Nota sobre o `curl`:** O comando acima pode retornar HTTP 405 dependendo dos redirecionamentos do Google. Isso é comportamento do `curl` com URLs do Apps Script — não indica erro no script. O teste definitivo é preencher o formulário no site e verificar a planilha.
 
 ---
 
