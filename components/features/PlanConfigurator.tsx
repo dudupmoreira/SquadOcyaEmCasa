@@ -333,7 +333,7 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                     Sua seleção do mar foi recebida com sucesso pela equipe do Ocyá.
                 </p>
                 <div className="bg-blue-50 text-blue-800 p-6 rounded-xl text-sm max-w-md mx-auto mb-8">
-                    Nossa equipe vai ativar a sua assinatura diretamente na plataforma BetaLabs. Entraremos em contato caso haja alguma dúvida.
+                    Nossa equipe vai ativar a sua assinatura diretamente na plataforma de assinatura. Entraremos em contato caso haja alguma dúvida.
                 </div>
                 <Button asChild className="bg-azul text-white">
                     <Link href="/">Voltar para o início</Link>
