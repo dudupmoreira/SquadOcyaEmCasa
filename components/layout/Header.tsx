@@ -160,6 +160,16 @@ interface NavItem {
 }
 
 function NavLink({ item, onClick }: { item: NavItem; onClick: (href: string, type: string) => void }) {
+    const className = "text-xs font-semibold uppercase tracking-wide text-foreground hover:text-azul transition-colors"
+    
+    if (item.type === 'disabled') {
+        return (
+            <span className={`${className} opacity-50 cursor-not-allowed`}>
+                {item.label}
+            </span>
+        )
+    }
+
     if (item.type === 'external') {
         return (
             <a
@@ -196,6 +206,14 @@ function NavLink({ item, onClick }: { item: NavItem; onClick: (href: string, typ
 
 function MobileNavLink({ item, onClick }: { item: NavItem; onClick: () => void }) {
     const baseClass = "block text-base font-medium text-foreground hover:text-azul hover:bg-azul/5 transition-all py-3 px-3 rounded-lg -mx-3"
+
+    if (item.type === 'disabled') {
+        return (
+            <span className={`${baseClass} opacity-50 cursor-not-allowed`}>
+                {item.label}
+            </span>
+        )
+    }
 
     if (item.type === 'external') {
         return (

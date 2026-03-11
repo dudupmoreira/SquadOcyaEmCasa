@@ -267,9 +267,9 @@ export function AlemDaMesaContent() {
                                                 <div key={productId} className="flex items-center justify-between text-sm">
                                                     <div className="flex-1">
                                                         <p className="font-medium">{product.name}</p>
-                                                        <p className="text-muted-foreground">
-                                                            R$ {product.price.toFixed(2).replace('.', ',')} × {qty}
-                                                        </p>
+                                          <p className="text-muted-foreground">
+                                             {qty}
+                                          </p>
                                                     </div>
                                                     <div className="flex items-center gap-1">
                                                         <Button variant="outline" size="sm" className="h-6 w-6 p-0" onClick={() => removeFromCart(productId)}>
@@ -286,10 +286,10 @@ export function AlemDaMesaContent() {
 
                                         <Separator />
 
-                                        <div className="flex justify-between font-semibold">
-                                            <span>Total</span>
-                                            <span className="text-azul">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
-                                        </div>
+                                          <div className="flex justify-between font-semibold">
+                                              <span>Total de Itens</span>
+                                              <span className="text-azul">{cartItemsCount}</span>
+                                          </div>
 
                                         <Button className="w-full bg-azul hover:bg-azul-claro" onClick={() => setShowDelivery(true)}>
                                             Finalizar compra
@@ -454,10 +454,10 @@ export function AlemDaMesaContent() {
                                     </div>
 
                                     <Separator />
-                                    <div className="flex justify-between font-semibold">
-                                        <span>Total</span>
-                                        <span className="text-azul">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
-                                    </div>
+                                      <div className="flex justify-between font-semibold">
+                                          <span>Total de Itens</span>
+                                          <span className="text-azul">{cartItemsCount}</span>
+                                      </div>
 
                                     <Button 
                                         onClick={handleSubmitOrder}
@@ -484,7 +484,7 @@ export function AlemDaMesaContent() {
                                 </div>
                                 <div>
                                     <span className="text-sm opacity-80">{cartItemsCount} {cartItemsCount === 1 ? 'item' : 'itens'}</span>
-                                    <p className="font-bold">R$ {cartTotal.toFixed(2).replace('.', ',')}</p>
+                                      <p className="font-bold">{cartItemsCount} {cartItemsCount === 1 ? 'item' : 'itens'}</p>
                                 </div>
                             </div>
                             <Button size="sm" className="bg-white text-azul hover:bg-white/90" onClick={() => setShowDelivery(true)}>
@@ -564,13 +564,9 @@ function ProductCard({ product, quantity, onAdd, onRemove }: {
                     {/* Price and actions */}
                     <div className="mt-auto">
                         {/* Price */}
-                        <div className="mb-2 md:mb-3">
-                            <span className="text-xs text-muted-foreground">R$ </span>
-                            <span className="text-lg md:text-xl font-bold text-azul">{product.price.toFixed(0)}</span>
-                            <span className="text-xs text-muted-foreground">,00</span>
-                        </div>
-
-                        {/* Actions */}
+                         
+ 
+                         {/* Actions */}
                         {quantity > 0 ? (
                             <div className="flex items-center justify-between bg-azul/5 rounded-lg p-2">
                                 <div className="flex items-center gap-2">
@@ -582,9 +578,9 @@ function ProductCard({ product, quantity, onAdd, onRemove }: {
                                         <Plus className="w-3 h-3" />
                                     </Button>
                                 </div>
-                                <span className="font-bold text-azul text-sm">
-                                    R$ {(product.price * quantity).toFixed(0)}
-                                </span>
+<span className="font-bold text-azul text-sm">
+                                     {quantity} {quantity === 1 ? 'item' : 'itens'}
+                                 </span>
                             </div>
                         ) : (
                             <Button

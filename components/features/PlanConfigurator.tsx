@@ -15,7 +15,7 @@ interface PlanConfiguratorProps {
     plan: Plan
 }
 
-type Step = 'cep' | 'restrictions' | 'persons' | 'meals' | 'config' | 'frequency' | 'quantity' | 'purchase-type' | 'ecommerce' | 'delivery-preference' | 'delivery-date' | 'customer-data' | 'summary'
+type Step = 'restrictions' | 'persons' | 'meals' | 'config' | 'frequency' | 'quantity' | 'purchase-type' | 'ecommerce' | 'delivery-preference' | 'delivery-date' | 'customer-data' | 'summary'
 
 const restrictions = [
     { id: 'polvo', name: 'Polvo', emoji: '🐙' },
@@ -58,29 +58,38 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
 
     // Get steps based on flow type
     function getInitialStep(flow: Plan['flowType']): Step {
-        return 'cep'
+        switch (flow) {
+            case 'A': return 'restrictions'
+            case 'B': return 'frequency'
+            case 'C': 
+                if (plan.type === 'assinatura') return 'frequency'
+                return 'purchase-type'
+            case 'D':
+            case 'E': return 'purchase-type'
+            default: return 'customer-data'
+        }
     }
 
     const getSteps = (): Step[] => {
         switch (flowType) {
             case 'A': // Seleção do Mar: Restrições → Frequência → Pessoas → Entrega → Dados → Resumo
-                return ['cep', 'restrictions', 'frequency', 'persons', 'delivery-preference', 'customer-data', 'summary']
+                return ['restrictions', 'frequency', 'persons', 'delivery-preference', 'customer-data', 'summary']
             case 'B': // Peixe Essencial: Frequência → Pessoas → Refeições → Entrega → Dados → Resumo
-                return ['cep', 'frequency', 'persons', 'meals', 'delivery-preference', 'customer-data', 'summary']
+                return ['frequency', 'persons', 'meals', 'delivery-preference', 'customer-data', 'summary']
             case 'C': // Monte o Seu
                 if (plan.type === 'assinatura') {
-                    return ['cep', 'frequency', 'ecommerce', 'delivery-preference', 'customer-data', 'summary']
+                    return ['frequency', 'ecommerce', 'delivery-preference', 'customer-data', 'summary']
                 } else {
-                    return ['cep', 'purchase-type', 'ecommerce', 'delivery-date', 'customer-data', 'summary']
+                    return ['purchase-type', 'ecommerce', 'delivery-date', 'customer-data', 'summary']
                 }
             case 'D': // Kit Churrasco
             case 'E': // Reserva do Mar
                 if (purchaseType === 'assinatura') {
-                    return ['cep', 'purchase-type', 'quantity', 'frequency', 'delivery-preference', 'customer-data', 'summary']
+                    return ['purchase-type', 'quantity', 'frequency', 'delivery-preference', 'customer-data', 'summary']
                 }
-                return ['cep', 'purchase-type', 'quantity', 'delivery-date', 'customer-data', 'summary']
+                return ['purchase-type', 'quantity', 'delivery-date', 'customer-data', 'summary']
             default:
-                return ['cep', 'customer-data', 'summary']
+                return ['customer-data', 'summary']
         }
     }
 
@@ -112,10 +121,10 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
     const addToCart = (productId: string) => {
         setCart(prev => {
             const currentQty = prev[productId] || 0
-            if (currentQty >= 10) return prev
+            if (currentQty >= 6) return prev // Max 6 of the same item
 
             const totalItems = Object.values(prev).reduce((a, b) => a + b, 0)
-            if (totalItems >= 20) return prev
+            if (totalItems >= 6) return prev // Max 6 items in total
 
             return { ...prev, [productId]: currentQty + 1 }
         })
@@ -219,16 +228,6 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
 
     const renderStepContent = () => {
         switch (currentStep) {
-            case 'cep':
-                return (
-                    <CepStep
-                        initialCep={customerData.cep}
-                        onCepValid={(cep, city, state) => {
-                            setCustomerData(prev => ({ ...prev, cep, city, state }))
-                            goNext()
-                        }}
-                    />
-                )
             case 'restrictions':
                 return <RestrictionsStep selectedRestriction={selectedRestriction} onSelect={setSelectedRestriction} />
             case 'persons':
@@ -251,11 +250,10 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                 return <FrequencyStep frequency={frequency} onFrequencyChange={setFrequency} />
             case 'quantity':
                 return (
-                    <QuantityStep
+                     <QuantityStep
                         plan={plan}
                         quantity={quantity}
                         onQuantityChange={setQuantity}
-                        unitPrice={plan.price || 0}
                     />
                 )
             case 'purchase-type':
@@ -427,7 +425,7 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                         )}
                     </Button>
                 ) : (
-                    <Button onClick={goNext} disabled={currentStep === 'cep' && customerData.state !== 'RJ'} className="bg-azul hover:bg-azul-claro gap-2">
+                    <Button onClick={goNext} className="bg-azul hover:bg-azul-claro gap-2">
                         Próximo
                         <ArrowRight className="w-4 h-4" />
                     </Button>
@@ -447,10 +445,7 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                 </Button>
 
                 <div className="flex-1 text-center">
-                    <span className="text-lg font-bold text-azul">
-                        R$ {calculatePrice().toFixed(2).replace('.', ',')}
-                    </span>
-                    {isSubscription && <span className="text-xs text-muted-foreground">/mês</span>}
+                   
                 </div>
 
                 {isLastStep ? (
@@ -466,7 +461,6 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                     <Button
                         onClick={goNext}
                         size="sm"
-                        disabled={currentStep === 'cep' && customerData.state !== 'RJ'}
                         className="bg-azul hover:bg-azul-claro flex-shrink-0"
                     >
                         Próximo
@@ -629,7 +623,7 @@ function FrequencyStep({ frequency, onFrequencyChange }: { frequency: string; on
     )
 }
 
-function QuantityStep({ plan, quantity, onQuantityChange, unitPrice }: { plan: Plan; quantity: number; onQuantityChange: (n: number) => void; unitPrice: number }) {
+function QuantityStep({ plan, quantity, onQuantityChange }: { plan: Plan; quantity: number; onQuantityChange: (n: number) => void; unitPrice: number }) {
     const formatQty = (qty: number, unit: string) => {
         if (unit === 'un') return `${qty} ${qty === 1 ? 'unidade' : 'unidades'}`
         if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(1).replace('.0', '')}kg`
@@ -688,15 +682,7 @@ function QuantityStep({ plan, quantity, onQuantityChange, unitPrice }: { plan: P
             )}
 
             {/* Price summary */}
-            <div className="p-3 bg-areia/30 rounded-xl">
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">
-                        {quantity > 1 ? `${quantity} kits × R$ ${unitPrice.toFixed(2).replace('.', ',')}` : '1 kit'}
-                    </span>
-                    <span className="text-lg font-bold text-azul">R$ {(unitPrice * quantity).toFixed(2).replace('.', ',')}</span>
-                </div>
-            </div>
-
+            
             <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground justify-center">
                 <Truck className="w-3 h-3" />
                 <span>Entrega em até 48h · Somente Rio de Janeiro</span>
@@ -796,25 +782,19 @@ function EcommerceStep({ cart, cartTotal, cartItemsCount, onAddToCart, onRemoveF
                                     return (
                                         <div key={productId} className="flex justify-between text-sm">
                                             <span>{qty}× {product.name}</span>
-                                            <span className="text-muted-foreground">R$ {(product.price * qty).toFixed(2).replace('.', ',')}</span>
                                         </div>
                                     )
                                 })}
                                 <Separator className="my-2" />
                                 <div className="flex justify-between font-semibold">
-                                    <span>Total</span>
-                                    <span className="text-azul">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
+                                    <span>Total de Itens</span>
+                                    <span className="text-azul">{cartItemsCount}</span>
                                 </div>
                             </div>
                         )}
-                        {cartItemsCount > 10 && (
+                        {cartItemsCount >= 6 && (
                             <div className="mt-4 pt-4 border-t border-gray-200">
-                                <p className="text-xs text-muted-foreground mb-3 text-center">Para pedidos maiores, fale conosco via WhatsApp</p>
-                                <Button asChild className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center gap-2 h-10 font-semibold" size="sm">
-                                    <a href={contacts.whatsapp} target="_blank" rel="noopener noreferrer">
-                                        Fale com a gente!
-                                    </a>
-                                </Button>
+                                 <p className="text-xs text-amber-700 bg-amber-100 p-2 rounded-md text-center">Você atingiu o limite de 6 itens para a sua caixa.</p>
                             </div>
                         )}
                     </div>
@@ -1226,14 +1206,15 @@ function CustomerDataStep({ customerData, onCustomerDataChange }: {
 
                 {/* CEP */}
                 <div className="flex items-center gap-2">
-                    <div className="flex-1 max-w-[140px]">
+                    <div className="flex-1">
                         <input
                             type="text"
                             value={customerData.cep}
-                            readOnly
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed outline-none"
+                            onChange={(e) => updateField('cep', e.target.value)}
+                            className={inputClass('cep')}
                             placeholder="CEP *"
                         />
+                         {errors.cep && <p className="text-xs text-red-500 mt-1">{errors.cep}</p>}
                     </div>
                     {customerData.city && (
                         <span className="text-xs text-green-600 font-medium">✓ {customerData.city}/{customerData.state}</span>
@@ -1409,12 +1390,11 @@ function SummaryStep({ plan, persons, mealsPerWeek, frequency, quantity, restric
 
                 {/* Total */}
                 <div className="flex justify-between items-center pt-3">
-                    <span className="font-semibold">Total</span>
+                    <span className="font-semibold">Total de Itens</span>
                     <div className="text-right">
                         <span className="text-xl font-bold text-azul">
-                            {calculatedPrice > 0 ? `R$ ${calculatedPrice.toFixed(2).replace('.', ',')}` : 'A calcular'}
+                            {isSubscription ? '1 Kit' : cartItemsCount > 0 ? `${cartItemsCount} Itens` : 'Nenhum item'}
                         </span>
-                        {isSubscription && <span className="text-xs text-muted-foreground block">/mês</span>}
                     </div>
                 </div>
 

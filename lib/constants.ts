@@ -23,7 +23,7 @@ export const navigation = {
     { label: 'Planos', href: '#planos', type: 'anchor' },
     { label: 'Benefícios', href: '#beneficios', type: 'anchor' },
     { label: 'Os Restaurantes', href: 'https://ocya.com.br', type: 'external' },
-    { label: 'Além da Mesa', href: '/alem-da-mesa', type: 'link' },
+    { label: 'Além da Mesa', href: '#', type: 'disabled' },
     { label: 'Dúvidas', href: '#faq', type: 'anchor' },
   ],
 } as const
