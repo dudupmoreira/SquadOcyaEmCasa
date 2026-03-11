@@ -217,9 +217,6 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                 total: calculatePrice().toFixed(2).replace('.', ',')
             }
 
-            console.log('[Squad Ocyá] Enviando pedido para webhook:', payload)
-            console.log('[Squad Ocyá] URL do webhook:', process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL)
-
             await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -229,7 +226,6 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                 body: JSON.stringify(payload)
             })
 
-            console.log('[Squad Ocyá] fetch concluído (no-cors — resposta não legível)')
             // Com no-cors não é possível ler a resposta — assumimos sucesso se não houver throw
             setIsSuccess(true)
         } catch (error) {
