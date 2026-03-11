@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Squad Ocyá em Casa
 
-## Getting Started
+Esta é uma versão derivada do front-end principal do "Ocyá em Casa", adaptada exclusivamente para o **Squad de Influenciadores**. 
 
-First, run the development server:
+A finalidade deste site é permitir que influenciadores montem seus kits personalizados (limitado a 6 itens) ou selecionem planos de assinatura, gerando conteúdo sem visualizar valores monetários (R$).
 
+**Diferenças para a versão principal (BetaLabs):**
+- Sem menção a preços.
+- Sem integração com plataforma de pagamento/e-commerce.
+- Limite de 6 itens na montagem de kits avulsos.
+- Sem verificação restrita de CEP de entrega.
+- "Além da Mesa" desabilitado.
+- Os pedidos são enviados via webhook para um script no Google Apps Script, que os adiciona em uma planilha do Google Sheets e envia um alerta por e-mail para a equipe do Ocyá, que ativa a assinatura manualmente.
+
+## Estrutura do Pedido (Webhook)
+
+O envio do pedido no checkout está conectado a uma variável de ambiente:
+`NEXT_PUBLIC_GOOGLE_SCRIPT_URL`
+
+Ao finalizar, o site realiza um POST assíncrono (`no-cors`) para essa URL.
+
+Para saber como configurar ou modificar o script da planilha que recebe esses dados, consulte o arquivo:
+👉 [GUIA_APPS_SCRIPT.md](./GUIA_APPS_SCRIPT.md)
+
+## Links e Hospedagem
+- **Domínio:** https://squad.ocyaemcasa.com.br
+- **Hospedagem:** Vercel (Projeto `squad-ocya-em-casa`)
+- **Repositório:** GitHub (`dudupmoreira/SquadOcyaEmCasa`)
+
+## Como rodar localmente
+
+Instale as dependências:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Crie o arquivo `.env.local` na raiz e adicione a URL do seu Google Script:
+```env
+NEXT_PUBLIC_GOOGLE_SCRIPT_URL=https://script.google.com/macros/s/.../exec
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Inicie o servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
