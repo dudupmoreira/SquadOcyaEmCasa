@@ -623,7 +623,7 @@ function FrequencyStep({ frequency, onFrequencyChange }: { frequency: string; on
     )
 }
 
-function QuantityStep({ plan, quantity, onQuantityChange }: { plan: Plan; quantity: number; onQuantityChange: (n: number) => void; unitPrice: number }) {
+function QuantityStep({ plan, quantity, onQuantityChange }: { plan: Plan; quantity: number; onQuantityChange: (n: number) => void; }) {
     const formatQty = (qty: number, unit: string) => {
         if (unit === 'un') return `${qty} ${qty === 1 ? 'unidade' : 'unidades'}`
         if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(1).replace('.0', '')}kg`
