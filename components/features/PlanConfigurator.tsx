@@ -175,6 +175,12 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
             return
         }
 
+        // Validação mínima dos dados do cliente
+        if (!customerData.name.trim() || !customerData.email.trim() || !customerData.phone.trim()) {
+            alert('Por favor, preencha nome, e-mail e telefone antes de finalizar.')
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
@@ -211,16 +217,23 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                 total: calculatePrice().toFixed(2).replace('.', ',')
             }
 
+            console.log('[Squad Ocyá] Enviando pedido para webhook:', payload)
+            console.log('[Squad Ocyá] URL do webhook:', process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL)
+
             await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=UTF-8',
+                },
                 body: JSON.stringify(payload)
             })
 
+            console.log('[Squad Ocyá] fetch concluído (no-cors — resposta não legível)')
             // Com no-cors não é possível ler a resposta — assumimos sucesso se não houver throw
             setIsSuccess(true)
         } catch (error) {
-            console.error('Erro ao enviar pedido:', error)
+            console.error('[Squad Ocyá] Erro ao enviar pedido:', error)
             alert('Ocorreu um erro ao enviar o pedido. Tente novamente.')
         } finally {
             setIsSubmitting(false)
