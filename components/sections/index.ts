@@ -1,0 +1,5 @@
+export { HeroSection } from './HeroSection'
+export { BenefitsSection } from './BenefitsSection'
+export { PlansSection } from './PlansSection'
+export { FAQSection } from './FAQSection'
+export { CommunitySection } from './CommunitySection'
