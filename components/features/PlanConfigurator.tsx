@@ -211,12 +211,13 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                 total: calculatePrice().toFixed(2).replace('.', ',')
             }
 
-            const res = await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
+            await fetch(process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 body: JSON.stringify(payload)
             })
 
-            // Com no-cors, sempre assumimos sucesso se não der throw
+            // Com no-cors não é possível ler a resposta — assumimos sucesso se não houver throw
             setIsSuccess(true)
         } catch (error) {
             console.error('Erro ao enviar pedido:', error)
