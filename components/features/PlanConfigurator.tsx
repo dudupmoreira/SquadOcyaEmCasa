@@ -310,6 +310,7 @@ export function PlanConfigurator({ plan }: PlanConfiguratorProps) {
                         deliveryDay={deliveryDay}
                         deliveryShift={deliveryShift}
                         deliveryDate={deliveryDate}
+                        cartItemsCount={cartItemsCount}
                     />
                 )
             default:
@@ -1226,11 +1227,11 @@ function CustomerDataStep({ customerData, onCustomerDataChange }: {
 }
 
 
-function SummaryStep({ plan, persons, mealsPerWeek, frequency, quantity, restriction, cart, cartTotal, calculatedPrice, customerData, purchaseType, deliveryDay, deliveryShift, deliveryDate }: {
+function SummaryStep({ plan, persons, mealsPerWeek, frequency, quantity, restriction, cart, cartTotal, calculatedPrice, customerData, purchaseType, deliveryDay, deliveryShift, deliveryDate, cartItemsCount }: {
     plan: Plan; persons: number; mealsPerWeek: number; frequency: string; quantity: number
     restriction: string | null; cart: Record<string, number>; cartTotal: number; calculatedPrice: number
     customerData: CustomerDataType; purchaseType: 'alacarte' | 'assinatura'
-    deliveryDay: 'quarta' | 'quinta'; deliveryShift: 'manhã' | 'tarde'; deliveryDate: Date | null
+    deliveryDay: 'quarta' | 'quinta'; deliveryShift: 'manhã' | 'tarde'; deliveryDate: Date | null; cartItemsCount: number
 }) {
     const selectedFrequency = frequencies.find((f) => f.id === frequency)
     const selectedRestriction = restrictions.find((r) => r.id === restriction)
